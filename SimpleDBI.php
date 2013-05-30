@@ -223,6 +223,24 @@ class SimpleDBI
     }
 
     /**
+     * @link http://docs.doctrine-project.org/en/2.0.x/reference/transactions-and-concurrency.html#approach-2-explicitly
+     * @param callable $function
+     * @return null|string
+     */
+    public function transactional($function)
+    {
+        $return = null;
+        $this->begin();
+        try {
+            $return = $function();
+            $this->commit();
+        } catch (Exception $e) {
+            $this->rollback();
+        }
+        return $return;
+    }
+
+    /**
      * SQL を実行する
      *
      * @param string $sql
